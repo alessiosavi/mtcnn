@@ -28,7 +28,7 @@ import sys
 from setuptools import setup, setuptools
 
 __author__ = "Iván de Paz Centeno"
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 
 def readme():
@@ -49,8 +49,9 @@ setup(name='mtcnn',
       license='MIT',
       packages=setuptools.find_packages(exclude=["tests.*", "tests"]),
       install_requires=[
-          "keras>=2.0.0",
-          "opencv-python>=4.1.0"
+          "tensorflow",
+          "numpy",
+          "opencv"
       ],
       classifiers=[
           'Environment :: Console',

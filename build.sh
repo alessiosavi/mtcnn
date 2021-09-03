@@ -1,0 +1,1 @@
+python -m unittest tests/test_mtcnn.py && python setup.py bdist_wheel && check-wheel-contents dist/ &&  pip install dist/mtcnn-0.1.2-py3-none-any.whl --no-deps
