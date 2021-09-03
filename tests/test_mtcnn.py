@@ -1,10 +1,12 @@
 import unittest
+
 import cv2
+import numpy as np
 
-from mtcnn.exceptions import InvalidImage
 from mtcnn import MTCNN
+from mtcnn.exceptions import InvalidImage
 
-mtcnn = None
+mtcnn: MTCNN = None
 
 
 class TestMTCNN(unittest.TestCase):
@@ -19,7 +21,7 @@ class TestMTCNN(unittest.TestCase):
         MTCNN is able to detect faces and landmarks on an image
         :return:
         """
-        ivan = cv2.imread("ivan.jpg")
+        ivan: np.array = cv2.imread("ivan.jpg")
 
         result = mtcnn.detect_faces(ivan)  # type: list
 
@@ -64,7 +66,6 @@ class TestMTCNN(unittest.TestCase):
 
         result = mtcnn.detect_faces(ivan)  # type: list
         self.assertEqual(len(result), 0)
-
 
     def test_mtcnn_multiple_instances(self):
         """

@@ -29,6 +29,8 @@
 # It has been rebuilt from scratch, taking the David Sandberg's implementation as a reference.
 #
 
+from contextlib import closing
+
 import cv2
 import numpy as np
 import pkg_resources
@@ -74,17 +76,19 @@ class MTCNN(object):
         :param steps_threshold: step's thresholds values
         :param scale_factor: scale factor
         """
+
         if steps_threshold is None:
             steps_threshold = [0.6, 0.7, 0.7]
-
-        if weights_file is None:
-            weights_file = pkg_resources.resource_stream('mtcnn', 'data/mtcnn_weights.npy')
 
         self._min_face_size = min_face_size
         self._steps_threshold = steps_threshold
         self._scale_factor = scale_factor
 
-        self._pnet, self._rnet, self._onet = NetworkFactory().build_P_R_O_nets_from_file(weights_file)
+        if weights_file is None:
+            with closing(pkg_resources.resource_stream('mtcnn', 'data/mtcnn_weights.npy')) as wfile:
+                self._pnet, self._rnet, self._onet = NetworkFactory().build_P_R_O_nets_from_file(wfile)
+        else:
+            self._pnet, self._rnet, self._onet = NetworkFactory().build_P_R_O_nets_from_file(weights_file)
 
     @property
     def min_face_size(self):
@@ -203,7 +207,7 @@ class MTCNN(object):
 
             inter = w * h
 
-            if method is 'Min':
+            if method == 'Min':
                 o = inter / np.minimum(area[i], area[idx])
             else:
                 o = inter / (area[i] + area[idx] - inter)
@@ -275,7 +279,7 @@ class MTCNN(object):
         boundingbox[:, 0:4] = np.transpose(np.vstack([b1, b2, b3, b4]))
         return boundingbox
 
-    def detect_faces(self, img) -> list:
+    def detect_faces(self, img: np.array) -> list:
         """
         Detects bounding boxes from the specified image.
         :param img: image to process
@@ -339,7 +343,8 @@ class MTCNN(object):
             img_x = np.expand_dims(scaled_image, 0)
             img_y = np.transpose(img_x, (0, 2, 1, 3))
 
-            out = self._pnet.predict(img_y)
+            out = self._pnet(img_y, training=False)
+            out = [tensor_element.numpy() for tensor_element in out]
 
             out0 = np.transpose(out[0], (0, 2, 1, 3))
             out1 = np.transpose(out[1], (0, 2, 1, 3))
@@ -407,7 +412,8 @@ class MTCNN(object):
         tempimg = (tempimg - 127.5) * 0.0078125
         tempimg1 = np.transpose(tempimg, (3, 1, 0, 2))
 
-        out = self._rnet.predict(tempimg1)
+        out = self._rnet(tempimg1, training=False)
+        out = [tensor_element.numpy() for tensor_element in out]
 
         out0 = np.transpose(out[0])
         out1 = np.transpose(out[1])
@@ -463,7 +469,8 @@ class MTCNN(object):
         tempimg = (tempimg - 127.5) * 0.0078125
         tempimg1 = np.transpose(tempimg, (3, 1, 0, 2))
 
-        out = self._onet.predict(tempimg1)
+        out = self._onet(tempimg1, training=False)
+        out = [tensor_element.numpy() for tensor_element in out]
         out0 = np.transpose(out[0])
         out1 = np.transpose(out[1])
         out2 = np.transpose(out[2])

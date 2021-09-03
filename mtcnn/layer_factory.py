@@ -1,30 +1,31 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-#MIT License
+# MIT License
 #
-#Copyright (c) 2018 Iván de Paz Centeno
+# Copyright (c) 2018 Iván de Paz Centeno
 #
-#Permission is hereby granted, free of charge, to any person obtaining a copy
-#of this software and associated documentation files (the "Software"), to deal
-#in the Software without restriction, including without limitation the rights
-#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#copies of the Software, and to permit persons to whom the Software is
-#furnished to do so, subject to the following conditions:
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
 #
-#The above copyright notice and this permission notice shall be included in all
-#copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
 #
-#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#SOFTWARE.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+from distutils.version import LooseVersion
 
 import tensorflow as tf
-from distutils.version import LooseVersion
 
 __author__ = "Iván de Paz Centeno"
 
@@ -62,7 +63,7 @@ class LayerFactory(object):
             for x in input_shape[1:].as_list():
                 dim *= int(x)
 
-            #dim = operator.mul(*(input_shape[1:].as_list()))
+            # dim = operator.mul(*(input_shape[1:].as_list()))
             vectorized_input = tf.reshape(input_layer, [-1, dim])
         else:
             vectorized_input, dim = (input_layer, input_shape[-1])
@@ -90,8 +91,8 @@ class LayerFactory(object):
         self.__network.add_layer(name, layer_output=feed_data)
 
     def new_conv(self, name: str, kernel_size: tuple, channels_output: int,
-                 stride_size: tuple, padding: str='SAME',
-                 group: int=1, biased: bool=True, relu: bool=True, input_layer_name: str=None):
+                 stride_size: tuple, padding: str = 'SAME',
+                 group: int = 1, biased: bool = True, relu: bool = True, input_layer_name: str = None):
         """
         Creates a convolution layer for the network.
         :param name: name for the layer
@@ -119,9 +120,9 @@ class LayerFactory(object):
 
         # Convolution for a given input and kernel
         convolve = lambda input_val, kernel: tf.nn.conv2d(input=input_val,
-                filters=kernel, 
-                strides=[1, stride_size[1], stride_size[0], 1],
-                padding=padding)
+                                                          filters=kernel,
+                                                          strides=[1, stride_size[1], stride_size[0], 1],
+                                                          padding=padding)
 
         with tf.compat.v1.variable_scope(name) as scope:
             kernel = self.__make_var('weights', shape=[kernel_size[1], kernel_size[0], channels_input // group, channels_output])
@@ -137,10 +138,9 @@ class LayerFactory(object):
             if relu:
                 output = tf.nn.relu(output, name=scope.name)
 
-
         self.__network.add_layer(name, layer_output=output)
 
-    def new_prelu(self, name: str, input_layer_name: str=None):
+    def new_prelu(self, name: str, input_layer_name: str = None):
         """
         Creates a new prelu layer with the given name and input.
         :param name: name for this layer.
@@ -155,8 +155,8 @@ class LayerFactory(object):
 
         self.__network.add_layer(name, layer_output=output)
 
-    def new_max_pool(self, name:str, kernel_size: tuple, stride_size: tuple, padding='SAME',
-                     input_layer_name: str=None):
+    def new_max_pool(self, name: str, kernel_size: tuple, stride_size: tuple, padding='SAME',
+                     input_layer_name: str = None):
         """
         Creates a new max pooling layer.
         :param name: name for the layer.
@@ -172,14 +172,14 @@ class LayerFactory(object):
         input_layer = self.__network.get_layer(input_layer_name)
 
         output = tf.nn.max_pool2d(input=input_layer,
-                                ksize=[1, kernel_size[1], kernel_size[0], 1],
-                                strides=[1, stride_size[1], stride_size[0], 1],
-                                padding=padding,
-                                name=name)
+                                  ksize=[1, kernel_size[1], kernel_size[0], 1],
+                                  strides=[1, stride_size[1], stride_size[0], 1],
+                                  padding=padding,
+                                  name=name)
 
         self.__network.add_layer(name, layer_output=output)
 
-    def new_fully_connected(self, name: str, output_count: int, relu=True, input_layer_name: str=None):
+    def new_fully_connected(self, name: str, output_count: int, relu=True, input_layer_name: str = None):
         """
         Creates a new fully connected layer.
 
@@ -202,7 +202,7 @@ class LayerFactory(object):
 
         self.__network.add_layer(name, layer_output=fc)
 
-    def new_softmax(self, name, axis, input_layer_name: str=None):
+    def new_softmax(self, name, axis, input_layer_name: str = None):
         """
         Creates a new softmax layer
         :param name: name to set for the layer
@@ -224,4 +224,3 @@ class LayerFactory(object):
         softmax = tf.math.divide(target_exp, normalize, name)
 
         self.__network.add_layer(name, layer_output=softmax)
-
