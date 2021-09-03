@@ -29,6 +29,8 @@
 # It has been rebuilt from scratch, taking the David Sandberg's implementation as a reference.
 #
 
+from contextlib import closing
+
 import cv2
 import numpy as np
 import pkg_resources
@@ -74,17 +76,19 @@ class MTCNN(object):
         :param steps_threshold: step's thresholds values
         :param scale_factor: scale factor
         """
+
         if steps_threshold is None:
             steps_threshold = [0.6, 0.7, 0.7]
-
-        if weights_file is None:
-            weights_file = pkg_resources.resource_stream('mtcnn', 'data/mtcnn_weights.npy')
 
         self._min_face_size = min_face_size
         self._steps_threshold = steps_threshold
         self._scale_factor = scale_factor
 
-        self._pnet, self._rnet, self._onet = NetworkFactory().build_P_R_O_nets_from_file(weights_file)
+        if weights_file is None:
+            with closing(pkg_resources.resource_stream('mtcnn', 'data/mtcnn_weights.npy')) as wfile:
+                self._pnet, self._rnet, self._onet = NetworkFactory().build_P_R_O_nets_from_file(wfile)
+        else:
+            self._pnet, self._rnet, self._onet = NetworkFactory().build_P_R_O_nets_from_file(weights_file)
 
     @property
     def min_face_size(self):
@@ -203,7 +207,7 @@ class MTCNN(object):
 
             inter = w * h
 
-            if method is 'Min':
+            if method == 'Min':
                 o = inter / np.minimum(area[i], area[idx])
             else:
                 o = inter / (area[i] + area[idx] - inter)

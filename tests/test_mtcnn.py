@@ -1,10 +1,11 @@
 import unittest
+
 import cv2
 
-from mtcnn.exceptions import InvalidImage
 from mtcnn import MTCNN
+from mtcnn.exceptions import InvalidImage
 
-mtcnn = None
+mtcnn: MTCNN = None
 
 
 class TestMTCNN(unittest.TestCase):
@@ -64,7 +65,6 @@ class TestMTCNN(unittest.TestCase):
 
         result = mtcnn.detect_faces(ivan)  # type: list
         self.assertEqual(len(result), 0)
-
 
     def test_mtcnn_multiple_instances(self):
         """

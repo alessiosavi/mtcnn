@@ -24,11 +24,11 @@
 # SOFTWARE.
 
 import sys
+
 from setuptools import setup, setuptools
 
-
 __author__ = "Iván de Paz Centeno"
-__version__= "0.1.1"
+__version__ = "0.1.1"
 
 
 def readme():
@@ -38,7 +38,6 @@ def readme():
 
 if sys.version_info < (3, 4, 1):
     sys.exit('Python < 3.4.1 is not supported!')
-
 
 setup(name='mtcnn',
       version=__version__,

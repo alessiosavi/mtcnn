@@ -24,6 +24,7 @@
 # SOFTWARE.
 
 import cv2
+
 from mtcnn import MTCNN
 
 detector = MTCNN()
@@ -37,15 +38,15 @@ keypoints = result[0]['keypoints']
 
 cv2.rectangle(image,
               (bounding_box[0], bounding_box[1]),
-              (bounding_box[0]+bounding_box[2], bounding_box[1] + bounding_box[3]),
-              (0,155,255),
+              (bounding_box[0] + bounding_box[2], bounding_box[1] + bounding_box[3]),
+              (0, 155, 255),
               2)
 
-cv2.circle(image,(keypoints['left_eye']), 2, (0,155,255), 2)
-cv2.circle(image,(keypoints['right_eye']), 2, (0,155,255), 2)
-cv2.circle(image,(keypoints['nose']), 2, (0,155,255), 2)
-cv2.circle(image,(keypoints['mouth_left']), 2, (0,155,255), 2)
-cv2.circle(image,(keypoints['mouth_right']), 2, (0,155,255), 2)
+cv2.circle(image, (keypoints['left_eye']), 2, (0, 155, 255), 2)
+cv2.circle(image, (keypoints['right_eye']), 2, (0, 155, 255), 2)
+cv2.circle(image, (keypoints['nose']), 2, (0, 155, 255), 2)
+cv2.circle(image, (keypoints['mouth_left']), 2, (0, 155, 255), 2)
+cv2.circle(image, (keypoints['mouth_right']), 2, (0, 155, 255), 2)
 
 cv2.imwrite("ivan_drawn.jpg", cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
 
